@@ -1,0 +1,1 @@
+function Scope(e,t,n,i,r,a){this.value=e,this.parent=t,this.parameters=n,this.document=i,this.components=r,this.beforeChange=a}module.exports=Scope,Scope.nest=function(e,t){return e=e||new Scope,new Scope(t,e,e.parameters,e.document,e.components,e.beforeChange)};

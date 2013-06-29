@@ -1,0 +1,1 @@
+function makeParserFromTrie(t){var e={};return Object.keys(t.children).forEach(function(n){e[n]=makeParserFromTrie(t.children[n])}),function(n,i){return i=i||identity,function(r,a){return e[r]?e[r](n,function(t){return i(t)(r,a)}):n(t.value,i)(r,a)}}}function identity(t){return t}module.exports=makeParserFromTrie;

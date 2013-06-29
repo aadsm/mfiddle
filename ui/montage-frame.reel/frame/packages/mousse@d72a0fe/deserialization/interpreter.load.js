@@ -1,0 +1,1 @@
+montageDefine("d72a0fe","deserialization/interpreter",{dependencies:["./reviver","./context"],factory:function(e,t){(function(t){function n(){}var a=e("./reviver").Reviver,r=e("./context").Context;Object.defineProperties(n.prototype,{instantiate:{value:function(e,t){var n=new a,i=new r(e,n,t);return i.getObjects()}}}),t.Interpreter=n})(t)}});
