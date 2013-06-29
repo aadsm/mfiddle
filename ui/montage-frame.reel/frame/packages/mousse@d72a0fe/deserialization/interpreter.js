@@ -1,1 +1,0 @@
-(function(e){function t(){}var n=require("./reviver").Reviver,a=require("./context").Context;Object.defineProperties(t.prototype,{instantiate:{value:function(e,t){var r=new n,i=new a(e,r,t);return i.getObjects()}}}),e.Interpreter=t})(exports);

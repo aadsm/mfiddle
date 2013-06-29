@@ -1,1 +1,0 @@
-function makeLeftToRightParser(t,e,n){var i=function(r,a){return a?e(function(e){return e?t(function(t){return i(r,n(e,a,t))}):r(a)}):t(function(t){return i(r,t)})};return i}module.exports=makeLeftToRightParser;

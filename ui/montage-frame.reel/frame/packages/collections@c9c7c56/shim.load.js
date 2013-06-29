@@ -1,0 +1,1 @@
+montageDefine("c9c7c56","shim",{dependencies:["./shim-array","./shim-object","./shim-function","./shim-regexp"],factory:function(t){t("./shim-array"),t("./shim-object"),t("./shim-function"),t("./shim-regexp")}});

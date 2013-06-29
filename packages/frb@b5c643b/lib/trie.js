@@ -1,1 +1,0 @@
-function makeTrie(t){var e=Object.keys(t),n={value:void 0,children:{}},i={};e.forEach(function(e){if(0===e.length)n.value=t[e];else{var r=e[0];i[r]||(i[r]={});var a=e.slice(1);i[r][a]=t[e]}});var r=Object.keys(i);return r.forEach(function(t){n.children[t]=makeTrie(i[t])}),n}module.exports=makeTrie;

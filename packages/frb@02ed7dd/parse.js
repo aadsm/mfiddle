@@ -1,0 +1,1 @@
+function parse(t,e){if(Array.isArray(t))return{type:"tuple",args:t.map(function(t){return parse(t,e)})};try{return grammar.parse(t,e||Object.empty)}catch(n){throw n.message=n.message.replace(/[\s\.]+$/,"")+" "+" on line "+n.line+" column "+n.column,n}}require("collections/shim");var grammar=require("./grammar");module.exports=parse;
