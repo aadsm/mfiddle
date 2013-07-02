@@ -1,1 +1,1 @@
-montageDefine("4203091","tests/01-events",{dependencies:["./test-helper.js"],factory:function(t,e){var n=t("./test-helper.js");e.dir="Events",e.test=function(t,e){n.writeToParser(n.getEventCollector(e),t.options.parser,t.html)}}});
+montageDefine("4203091","tests/01-events",{dependencies:["./test-helper.js"],factory:function(e,t){var n=e("./test-helper.js");t.dir="Events",t.test=function(e,t){n.writeToParser(n.getEventCollector(t),e.options.parser,e.html)}}});

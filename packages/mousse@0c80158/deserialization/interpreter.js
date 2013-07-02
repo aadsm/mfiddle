@@ -1,1 +1,1 @@
-(function(t){function e(){}var n=require("./reviver").Reviver,i=require("./context").Context;Object.defineProperties(e.prototype,{instantiate:{value:function(t,e){var r=new n,a=new i(t,r,e);return a.getObjects()}}}),t.Interpreter=e})(exports);
+(function(e){function t(){}var n=require("./reviver").Reviver,i=require("./context").Context;Object.defineProperties(t.prototype,{instantiate:{value:function(e,t){var r=new n,a=new i(e,r,t);return a.getObjects()}}}),e.Interpreter=t})(exports);

@@ -1,1 +1,0 @@
-montageDefine("37b4b7f","ui/example-button.reel/example-button.html",{text:'<!DOCTYPE html>\n\n<html>\n<head>\n    <title></title>\n    <link rel=stylesheet type="text/css" href=example-button.css>\n</head>\n<body>\n</body>\n</html>'});
