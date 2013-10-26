@@ -126,23 +126,17 @@ var gist = exports.gist = {
         }
 
         var id = gist.id || '',
-            cssCode = options.cssCode,
-            htmlMarkup = options.htmlMarkup,
-            jsCode = options.jsCode,
-            settings = options.settings,
             title = "title",
             files = {};
 
-        if (cssCode) {
-            files["component.css"] = {"content": cssCode};
+        for (var filename in options.files) {
+            if (options.files.hasOwnProperty(filename)) {
+                if (options.files[filename]) {
+                    files[filename] = {"content": options.files[filename]};
+                }
+            }
         }
-        if (htmlMarkup) {
-            files["component.html"] = {"content": htmlMarkup};
-        }
-        if (jsCode) {
-            files["component.js"] = {"content": jsCode};
-        }
-        files["settings.json"] = {"content": JSON.stringify(settings)};
+        files["settings.json"] = {"content": JSON.stringify(options.settings)};
 
         gist.request({
             anon: options.anon,

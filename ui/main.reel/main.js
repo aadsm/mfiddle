@@ -309,9 +309,11 @@ exports.Main = Component.specialize({
         value: function() {
             gist.save({
                 anon: true,
-                cssCode: this.templateObjects.cssCodeMirror.value,
-                htmlMarkup: this._generateHtmlPage(),
-                jsCode: this.templateObjects.javascriptCodeMirror.value,
+                files: {
+                    "component.css": this.templateObjects.cssCodeMirror.value,
+                    "component.html": this._generateHtmlPage(),
+                    "component.js": this.templateObjects.javascriptCodeMirror.value
+                },
                 settings: {
                     version: 1
                 },
