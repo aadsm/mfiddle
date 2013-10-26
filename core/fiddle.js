@@ -14,6 +14,10 @@ var Fiddle = exports.Fiddle = Montage.specialize({
         value: null
     },
 
+    rev: {
+        value: null
+    },
+
     css: {
         value: null
     },
@@ -61,6 +65,61 @@ var Fiddle = exports.Fiddle = Montage.specialize({
             this.javascript = javascript;
 
             return this;
+        }
+    },
+
+    save: {
+        value: function() {
+            var self = this,
+                deferred = Promise.defer();
+
+            gist.save({
+                anon: true,
+                files: {
+                    "component.css": this.css,
+                    "component.html": this._generateHtmlPage(),
+                    "component.js": this.javascript
+                },
+                settings: this.settings,
+                callback: function(id, rev) {
+                    self.id = id;
+                    self.rev = rev;
+
+                    deferred.resolve();
+                }
+            });
+
+            return deferred.promise;
+        }
+    },
+
+    /**
+     <!DOCTYPE html>
+     <html>
+     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>MFiddle</title>
+        <script type="text/montage-serialization"><!-- serialization --></script>
+     </head>
+     <body>
+        <!-- html -->
+     </body>
+     </html>
+     */
+    _htmlPageTemplate: {
+        value: '<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <title>MFiddle</title>\n    <script type="text/montage-serialization"><!-- serialization --></script></head>\n<body>\n    <!-- html -->\n</body>\n</html>'
+    },
+    _generateHtmlPage: {
+        value: function() {
+            var serialization = this.serialization,
+                html = this.html;
+
+            serialization = serialization.replace(/\n/gm, "\n    ");
+            html = html.replace(/\n/gm, "\n    ");
+
+            return this._htmlPageTemplate
+                .replace("<!-- serialization -->", serialization)
+                .replace("<!-- html -->", html);
         }
     }
 }, {
