@@ -10,6 +10,10 @@ var Fiddle = exports.Fiddle = Montage.specialize({
         }
     },
 
+    version: {
+        value: null
+    },
+
     id: {
         value: null
     },
@@ -30,20 +34,14 @@ var Fiddle = exports.Fiddle = Montage.specialize({
         value: null
     },
 
-    settings: {
-        value: null
-    },
-
     init: {
-        value: function(settings, css, html, javascript) {
+        value: function(css, html, javascript, settings) {
             var htmlDocument,
                 serialization,
                 template;
 
-            if (!settings) {
-                settings = {
-                    version: 1
-                };
+            if (settings) {
+                this.version = settings.version;
             }
 
             if (html) {
@@ -58,11 +56,10 @@ var Fiddle = exports.Fiddle = Montage.specialize({
                 html = html.replace(/\n    /g, "\n").replace(/^\s*\n|\n\s*$/g, "");
             }
 
-            this.settings = settings;
-            this.css = css;
-            this.serialization = serialization;
-            this.html = html;
-            this.javascript = javascript;
+            this.css = css || "";
+            this.serialization = serialization || "";
+            this.html = html || "";
+            this.javascript = javascript || "";
 
             return this;
         }
@@ -80,7 +77,9 @@ var Fiddle = exports.Fiddle = Montage.specialize({
                     "component.html": this._generateHtmlPage(),
                     "component.js": this.javascript
                 },
-                settings: this.settings,
+                settings: {
+                    version: this.version
+                },
                 callback: function(id, rev) {
                     self.id = id;
                     self.rev = rev;
@@ -130,7 +129,13 @@ var Fiddle = exports.Fiddle = Montage.specialize({
             gist.load(id, null, function(settings, css, html, javascript) {
                 var fiddle;
 
-                fiddle = new Fiddle().init(settings, css, html, javascript);
+                // The original fiddle didn't store a version number, so we
+                // consider it to be version 0.
+                if (!settings.version) {
+                    settings.version = 0;
+                }
+
+                fiddle = new Fiddle().init(css, html, javascript, settings);
                 fiddle.id = id;
                 deferred.resolve(fiddle);
             });
