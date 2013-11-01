@@ -63,7 +63,7 @@ window.Frame = {
             self._addMontageMetadata(exports);
             require.inject(self._MODULE_ID, exports);
             callback(require/*avoid being parsed*/(self._MODULE_ID));
-        });
+        }).done();
     },
     _addMontageMetadata: function(exports) {
         // mostly a copy paste of SerializationCompiler
