@@ -30,10 +30,7 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Template = require("montage/core/template").Template,
-    gist = require("gist").gist;
-
-var VERSION = 1;
+    Fiddle = require("core/fiddle").Fiddle;
 
 exports.Main = Component.specialize({
     templateObjects: {value: {}},
@@ -49,10 +46,10 @@ exports.Main = Component.specialize({
             this.addEventListener("action", this, false);
             window.addEventListener("hashchange", this, false);
 
-            var gistId = location.hash.slice(3);
-            if (gistId) {
-                this.loadGist(gistId);
-                this.setupGistLink(gistId);
+            var fiddleId = location.hash.slice(3);
+            if (fiddleId) {
+                this.loadFiddle(fiddleId);
+                this.setupGistLink(fiddleId);
             } else {
                 this.loadExample(example);
                 this.executeFiddle();
@@ -67,44 +64,35 @@ exports.Main = Component.specialize({
         value: require("examples").examples
     },
 
-    loadGist: {
-        value: function(id) {
-            var self = this;
-
-            gist.load(id, null, function(settings, css, html, javascript) {
-                var htmlDocument,
-                    serialization,
-                    template;
-
-                if (settings.version !== VERSION) {
-                    self.redirectToVersion(settings.version, id);
-                    return;
-                }
-
-                if (html) {
-                    template = new Template();
-                    // extract body and serialization
-                    htmlDocument = template.createHtmlDocumentWithHtml(html);
-                    serialization = template.getInlineObjectsString(htmlDocument);
-                    html = htmlDocument.body.innerHTML;
-
-                    // clean up a bit
-                    serialization = serialization.replace(/\n    /g, "\n");
-                    html = html.replace(/\n    /g, "\n").replace(/^\s*\n|\n\s*$/g, "");
-                }
-
-                self.loadFiddle(css, serialization, html, javascript);
-                self.executeFiddle();
-            });
-        }
+    fiddle: {
+        value: null
     },
 
     loadFiddle: {
-        value: function(css, serialization, html, javascript) {
-            this.templateObjects.cssCodeMirror.value = css || "";
-            this.templateObjects.serializationCodeMirror.value = serialization || "";
-            this.templateObjects.htmlCodeMirror.value = html || "";
-            this.templateObjects.javascriptCodeMirror.value = javascript || "";
+        value: function(id) {
+            var self = this;
+
+            Fiddle.fromId(id).then(function(fiddle) {
+                self.editFiddle(fiddle);
+                self.executeFiddle();
+            }).fail(function(reason) {
+                if (reason.incompatibleVersion) {
+                    self.redirectToVersion(reason.version, id);
+                } else {
+                    throw new Error("Not able to load fiddle " + id + " because " + reason);
+                }
+            }).done();
+        }
+    },
+
+    editFiddle: {
+        value: function(fiddle) {
+            this.fiddle = fiddle;
+
+            this.templateObjects.cssCodeMirror.value = fiddle.css;
+            this.templateObjects.serializationCodeMirror.value = fiddle.serialization;
+            this.templateObjects.htmlCodeMirror.value = fiddle.html;
+            this.templateObjects.javascriptCodeMirror.value = fiddle.javascript;
         }
     },
 
@@ -124,7 +112,7 @@ exports.Main = Component.specialize({
     loadExample: {
         value: function(example) {
             location.hash = "";
-            this.loadFiddle(example.css, this._stringifySerialization(example.serialization), example.html, example.javascript);
+            this.editFiddle(example.fiddle.clone());
             this.executeFiddle();
         }
     },
@@ -142,15 +130,11 @@ exports.Main = Component.specialize({
     },
 
     redirectToVersion: {
-        value: function(version, gistId) {
+        value: function(version, fiddleId) {
             var href;
 
-            if (!version) {
-                version = 0;
-            }
-
             href = window.location.href.slice(0, -window.location.hash.length) +
-                    "v" + version + "/#!/" + gistId;
+                    "v" + version + "/#!/" + fiddleId;
             window.location.href = href;
         }
     },
@@ -158,7 +142,7 @@ exports.Main = Component.specialize({
     clear: {
         value: function() {
             location.hash = "";
-            this.loadFiddle("", "", "", "");
+            this.editFiddle(new Fiddle());
             this.executeFiddle();
         }
     },
@@ -268,37 +252,6 @@ exports.Main = Component.specialize({
         }
     },
 
-    /**
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>MFiddle</title>
-        <script type="text/montage-serialization"><!-- serialization -->}</script>
-    </head>
-    <body>
-        <!-- html -->
-    </body>
-    </html>
-    */
-    _htmlPageTemplate: {
-        value: '<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <title>MFiddle</title>\n    <script type="text/montage-serialization"><!-- serialization --></script></head>\n<body>\n    <!-- html -->\n</body>\n</html>'
-    },
-    _generateHtmlPage: {
-        value: function() {
-            var templateObjects = this.templateObjects,
-                serialization = templateObjects.serializationCodeMirror.value,
-                html = templateObjects.htmlCodeMirror.value;
-
-            serialization = serialization.replace(/\n/gm, "\n    ");
-            html = html.replace(/\n/gm, "\n    ");
-
-            return this._htmlPageTemplate
-                .replace("<!-- serialization -->", serialization)
-                .replace("<!-- html -->", html);
-        }
-    },
-
     handleComponentButtonAction: {
         value: function(action) {
             this.addComponentToFiddle(action.target.component);
@@ -307,24 +260,23 @@ exports.Main = Component.specialize({
 
     handleSaveAction: {
         value: function() {
-            gist.save({
-                anon: true,
-                files: {
-                    "component.css": this.templateObjects.cssCodeMirror.value,
-                    "component.html": this._generateHtmlPage(),
-                    "component.js": this.templateObjects.javascriptCodeMirror.value
-                },
-                settings: {
-                    version: 1
-                },
-                callback: function(id, rev) {
-                    if (rev) {
-                        location.hash = "!/" + id + "/" + rev;
-                    } else {
-                        location.hash = "!/" + id;
-                    }
+            var fiddle = this.fiddle,
+                templateObjects = this.templateObjects;
+
+            // TODO: CodeMirror component doesn't allow bindings to its value
+            // yet.
+            fiddle.css = templateObjects.cssCodeMirror.value;
+            fiddle.serialization = templateObjects.serializationCodeMirror.value;
+            fiddle.html = templateObjects.htmlCodeMirror.value;
+            fiddle.javascript = templateObjects.javascriptCodeMirror.value;
+
+            fiddle.save().then(function() {
+                if (fiddle.rev) {
+                    location.hash = "!/" + fiddle.id + "/" + fiddle.rev;
+                } else {
+                    location.hash = "!/" + fiddle.id;
                 }
-            });
+            }).done();
         }
     },
 
@@ -348,13 +300,13 @@ exports.Main = Component.specialize({
 
     handleHashchange: {
         value: function() {
-            var gistId = location.hash.slice(3);
+            var fiddleId = location.hash.slice(3);
 
-            if (gistId && gist.id != gistId) {
-                this.loadGist(gistId);
+            if (fiddleId && this.fiddle.id != fiddleId) {
+                this.loadFiddle(fiddleId);
             }
 
-            this.setupGistLink(gistId);
+            this.setupGistLink(fiddleId);
         }
     },
 

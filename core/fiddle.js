@@ -35,6 +35,22 @@ var Fiddle = exports.Fiddle = Montage.specialize({
     },
 
     init: {
+        value: function(css, serialization, html, javascript) {
+            this.version = Fiddle.VERSION;
+            this.css = css || "";
+            if (typeof serialization === "object") {
+                this.serialization = JSON.stringify(serialization, null, 4);
+            } else {
+                this.serialization = serialization || "";
+            }
+            this.html = html || "";
+            this.javascript = javascript || "";
+
+            return this;
+        }
+    },
+
+    initWithFiles: {
         value: function(css, html, javascript, settings) {
             var htmlDocument,
                 serialization,
@@ -60,6 +76,22 @@ var Fiddle = exports.Fiddle = Montage.specialize({
             this.serialization = serialization || "";
             this.html = html || "";
             this.javascript = javascript || "";
+
+            return this;
+        }
+    },
+
+    clone: {
+        value: function() {
+            var fiddle = new Fiddle();
+
+            fiddle.id = this.id;
+            fiddle.rev = this.rev;
+            fiddle.version = this.version;
+            fiddle.css = this.css;
+            fiddle.serialization = this.serialization;
+            fiddle.html = this.html;
+            fiddle.javascript = this.javascript;
 
             return this;
         }
@@ -122,6 +154,10 @@ var Fiddle = exports.Fiddle = Montage.specialize({
         }
     }
 }, {
+    VERSION: {
+        value: 1
+    },
+
     fromId: {
         value: function(id) {
             var deferred = Promise.defer();
@@ -135,9 +171,16 @@ var Fiddle = exports.Fiddle = Montage.specialize({
                     settings.version = 0;
                 }
 
-                fiddle = new Fiddle().init(css, html, javascript, settings);
-                fiddle.id = id;
-                deferred.resolve(fiddle);
+                if (settings.version === VERSION) {
+                    fiddle = new Fiddle().initWithFiles(css, html, javascript, settings);
+                    fiddle.id = id;
+                    deferred.resolve(fiddle);
+                } else {
+                    deferred.reject({
+                        incompatibleVersion: true,
+                        version: settings.version
+                    });
+                }
             });
 
             return deferred.promise;

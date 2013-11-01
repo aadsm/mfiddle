@@ -17,23 +17,23 @@ exports.Main = Component.specialize(/** @lends Main# */ {
     templateDidLoad: {
         value: function() {
             window.addEventListener("hashchange", this, false);
-            this.loadGist();
+            this.loadFiddle();
         }
     },
 
-    loadGist: {
+    loadFiddle: {
         value: function() {
-            var gistId = location.hash.slice(3);
+            var fiddleId = location.hash.slice(3);
 
-            if (gistId) {
-                this.templateObjects.embed.id = gistId;
+            if (fiddleId) {
+                this.templateObjects.embed.id = fiddleId;
             }
         }
     },
 
     handleHashchange: {
         value: function() {
-            this.loadGist();
+            this.loadFiddle();
         }
     }
 });

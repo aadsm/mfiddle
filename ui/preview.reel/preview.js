@@ -24,7 +24,7 @@ exports.Preview = Component.specialize(/** @lends Preview# */ {
         set: function(value) {
             if (value !== this._id) {
                 this._id = value;
-                this.loadGist(value);
+                this.loadFiddle(value);
             }
         },
         get: function() {
@@ -67,13 +67,13 @@ exports.Preview = Component.specialize(/** @lends Preview# */ {
         }
     },
 
-    loadGist: {
+    loadFiddle: {
         value: function(id) {
             var self = this;
 
             Fiddle.fromId(id).then(function(fiddle) {
                 self.fiddle = fiddle;
-            });
+            }).done();
         }
     }
 });

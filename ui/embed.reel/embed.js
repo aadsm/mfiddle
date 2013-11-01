@@ -28,7 +28,7 @@ exports.Embed = Component.specialize(/** @lends Embed# */ {
         set: function(value) {
             if (this._id !== value) {
                 this._id = value;
-                this.loadGist(value);
+                this.loadFiddle(value);
             }
         },
         get: function() {
@@ -73,13 +73,13 @@ exports.Embed = Component.specialize(/** @lends Embed# */ {
         }
     },
 
-    loadGist: {
+    loadFiddle: {
         value: function(id) {
             var self = this;
 
             Fiddle.fromId(id).then(function(fiddle) {
                 self.fiddle = fiddle;
-            });
+            }).done();
         }
     },
 
