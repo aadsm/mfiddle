@@ -19,7 +19,6 @@ exports.Main = Component.specialize({
             var fiddleId = location.hash.slice(3);
             if (fiddleId) {
                 this.loadFiddle(fiddleId);
-                this.setupGistLink(fiddleId);
             } else {
                 this.loadExample(example);
                 this.executeFiddle();
@@ -275,18 +274,6 @@ exports.Main = Component.specialize({
             if (fiddleId && this.fiddle.id != fiddleId) {
                 this.loadFiddle(fiddleId);
             }
-
-            this.setupGistLink(fiddleId);
-        }
-    },
-
-    setupGistLink: {
-        value: function(gistId) {
-            var gistLink = this.templateObjects.gistLink,
-                gistLinkCondition = this.templateObjects.gistLinkCondition;
-
-            gistLinkCondition.condition = !!gistId;
-            gistLink.href = "https://gist.github.com/" + gistId;
         }
     },
 

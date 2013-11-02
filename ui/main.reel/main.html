@@ -112,8 +112,10 @@
         "gistLinkCondition": {
             "prototype": "montage/ui/condition.reel",
             "properties": {
-                "element": {"#": "gistLinkCondition"},
-                "condition": false
+                "element": {"#": "gistLinkCondition"}
+            },
+            "bindings": {
+                "condition": {"<-": "@owner.fiddle.id.defined()"}
             }
         },
 
@@ -121,6 +123,9 @@
             "prototype": "matte/ui/anchor.reel",
             "properties": {
                 "element": {"#": "gist"}
+            },
+            "bindings": {
+                "href": {"<-": "'https://gist.github.com/' + @owner.fiddle.id"}
             }
         },
 
