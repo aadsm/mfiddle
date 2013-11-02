@@ -67,13 +67,14 @@ exports.Main = Component.specialize({
 
     executeFiddle: {
         value: function() {
-            var templateObjects = this.templateObjects;
+            var fiddle = this.fiddle;
 
-            templateObjects.montageFrame.load(
-                templateObjects.cssCodeMirror.value,
-                templateObjects.serializationCodeMirror.value,
-                templateObjects.htmlCodeMirror.value,
-                templateObjects.javascriptCodeMirror.value
+            this._syncFiddleWithEditors();
+            this.templateObjects.montageFrame.load(
+                fiddle.css,
+                fiddle.serialization,
+                fiddle.html,
+                fiddle.javascript
             );
         }
     },
@@ -113,6 +114,18 @@ exports.Main = Component.specialize({
             location.hash = "";
             this.editFiddle(new Fiddle());
             this.executeFiddle();
+        }
+    },
+
+    _syncFiddleWithEditors: {
+        value: function() {
+            var templateObjects = this.templateObjects,
+                fiddle = this.fiddle;
+
+            fiddle.css = templateObjects.cssCodeMirror.value;
+            fiddle.serialization = templateObjects.serializationCodeMirror.value;
+            fiddle.html = templateObjects.htmlCodeMirror.value;
+            fiddle.javascript = templateObjects.javascriptCodeMirror.value;
         }
     },
 
@@ -229,16 +242,11 @@ exports.Main = Component.specialize({
 
     handleSaveAction: {
         value: function() {
-            var fiddle = this.fiddle,
-                templateObjects = this.templateObjects;
+            var fiddle = this.fiddle;
 
             // TODO: CodeMirror component doesn't allow bindings to its value
             // yet.
-            fiddle.css = templateObjects.cssCodeMirror.value;
-            fiddle.serialization = templateObjects.serializationCodeMirror.value;
-            fiddle.html = templateObjects.htmlCodeMirror.value;
-            fiddle.javascript = templateObjects.javascriptCodeMirror.value;
-
+            this._syncFiddleWithEditors();
             fiddle.save().then(function() {
                 if (fiddle.rev) {
                     location.hash = "!/" + fiddle.id + "/" + fiddle.rev;
