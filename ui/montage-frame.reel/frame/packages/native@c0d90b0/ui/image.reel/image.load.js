@@ -1,1 +1,0 @@
-montageDefine("c0d90b0","ui/image.reel/image",{dependencies:["ui/native-control"],factory:function(t,e){var n=t("ui/native-control").NativeControl,i=e.Image=n.specialize({});i.addAttributes({alt:null,height:null,src:null,width:null})}});

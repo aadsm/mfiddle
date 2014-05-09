@@ -1,1 +1,0 @@
-montageDefine("c0d90b0","ui/input-text.reel/input-text",{dependencies:["ui/text-input"],factory:function(t,e){var n=t("ui/text-input").TextInput;e.InputText=n.specialize({select:{value:function(){this._element.select()}}})}});
